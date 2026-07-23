@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: campusiq_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: campusiq
+      MYSQL_USER: campusiq_user
+      MYSQL_PASSWORD: campusiq_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: campusiq_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: campusiq_backend
+    restart: unless-stopped
+    env_file: ./backend/.env
+    environment:
+      DATABASE_URL: mysql+pymysql://campusiq_user:campusiq_pass@mysql:3306/campusiq
+      REDIS_URL: redis://redis:6379/0
+      STORAGE_PATH: /app/storage
+      MODELS_PATH: /app/storage/models
+      REPORTS_PATH: /app/storage/reports
+      UPLOADS_PATH: /app/storage/uploads
+      VECTOR_DB_PATH: /app/storage/vector_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./storage:/app/storage
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: campusiq_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
+  redis_data:
