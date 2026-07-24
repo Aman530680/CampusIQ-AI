@@ -12,6 +12,7 @@ import PredictionsPage from './pages/admin/PredictionsPage'
 import StudentDashboard from './pages/student/StudentDashboard'
 import FacultyPage from './pages/admin/FacultyPage'
 import DepartmentsPage from './pages/admin/DepartmentsPage'
+import LandingPage from './pages/LandingPage'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } }
@@ -31,7 +32,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<LandingPage />} />
 
       {/* Admin Routes */}
       <Route path="/admin" element={<ProtectedRoute roles={['admin']}><AppLayout /></ProtectedRoute>}>
