@@ -35,8 +35,23 @@ def list_students(
     return PaginatedResponse(items=items, total=total, page=page, size=size, pages=math.ceil(total / size))
 
 
+@router.get("/me", response_model=StudentDetail)
+def get_current_student(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    if current_user.role != UserRole.student:
+        raise HTTPException(status_code=400, detail="Current user is not a student")
+    student = db.query(Student).filter(Student.user_id == current_user.id).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="Student profile not found")
+    repo = StudentRepository(db)
+    return repo.get_with_details(student.id)
+
+
 @router.get("/{student_id}", response_model=StudentDetail)
 def get_student(
+
     student_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),

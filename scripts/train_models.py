@@ -4,12 +4,16 @@ Train all ML models using data from the database.
 Usage: python scripts/train_models.py
 """
 import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 import pandas as pd
 from app.core.database import SessionLocal
 from app.models.models import StudentMLFeatures, Placement
-from app.ml.predictor import train_cgpa_predictor, train_risk_classifier, train_placement_predictor
+from app.ml.predictor import (
+    train_cgpa_predictor, train_risk_classifier, train_placement_predictor,
+    train_gpa_predictor, train_performance_classifier, train_attendance_forecaster
+)
 from loguru import logger
 
 
@@ -53,9 +57,19 @@ def train():
         m3 = train_placement_predictor(df)
         logger.info(f"Placement Predictor: {m3}")
 
+        m4 = train_gpa_predictor(df)
+        logger.info(f"GPA Predictor: {m4}")
+
+        m5 = train_performance_classifier(df)
+        logger.info(f"Performance Classifier: {m5}")
+
+        train_attendance_forecaster(pd.DataFrame())
+        logger.info("Prophet Attendance Forecaster trained.")
+
         logger.info("All models trained and saved successfully!")
     finally:
         db.close()
+
 
 
 if __name__ == "__main__":

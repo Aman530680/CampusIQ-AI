@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '../../store'
-import { analyticsService, attendanceService, predictionService } from '../../services'
+import { studentService, attendanceService, predictionService } from '../../services'
 import KPICard from '../../components/ui/KPICard'
 import { LoadingSpinner, RiskBadge, AttendanceBadge } from '../../components/ui/Badges'
 import { BookOpen, BarChart2, TrendingUp, Brain } from 'lucide-react'
@@ -8,20 +8,30 @@ import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, BarC
 
 export default function StudentDashboard() {
   const { user } = useAuthStore()
-  // In real app, get student ID from user profile
-  const studentId = 1
+
+  // Fetch current student profile
+  const { data: student, isLoading: studentLoading } = useQuery({
+    queryKey: ['student-me'],
+    queryFn: studentService.getMe,
+    enabled: user?.role === 'student'
+  })
+
+  const studentId = student?.id
 
   const { data: attendance, isLoading: attLoading } = useQuery({
     queryKey: ['student-attendance', studentId],
-    queryFn: () => attendanceService.getStudentAttendance(studentId),
+    queryFn: () => attendanceService.getStudentAttendance(studentId!),
+    enabled: !!studentId,
   })
 
   const { data: prediction, isLoading: predLoading } = useQuery({
     queryKey: ['student-prediction', studentId],
-    queryFn: () => predictionService.predict(studentId),
+    queryFn: () => predictionService.predict(studentId!),
+    enabled: !!studentId,
   })
 
-  if (attLoading || predLoading) return <LoadingSpinner size="lg" />
+  if (studentLoading || attLoading || predLoading) return <LoadingSpinner size="lg" />
+
 
   const radarData = prediction ? [
     { subject: 'Attendance', value: Math.min((prediction.predicted_cgpa || 0) * 10, 100) },

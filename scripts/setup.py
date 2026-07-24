@@ -7,6 +7,7 @@ import sys
 import os
 import argparse
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "backend"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from app.core.database import engine, SessionLocal, Base

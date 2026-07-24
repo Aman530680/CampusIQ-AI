@@ -1,6 +1,17 @@
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
+import bcrypt
+
+# Monkeypatch bcrypt to fix passlib 72-byte check on Python 3.12
+_original_hashpw = bcrypt.hashpw
+def _safe_hashpw(password, salt):
+    password_bytes = password.encode('utf-8') if isinstance(password, str) else password
+    if len(password_bytes) > 72:
+        password_bytes = password_bytes[:72]
+    return _original_hashpw(password_bytes, salt)
+bcrypt.hashpw = _safe_hashpw
+
 from passlib.context import CryptContext
 from app.core.config import settings
 

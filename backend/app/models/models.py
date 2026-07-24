@@ -212,3 +212,14 @@ class Assignment(Base):
     max_marks = Column(Float, default=10)
     submitted = Column(Boolean, default=False)
     submission_date = Column(Date, nullable=True)
+
+
+class AuditLog(Base):
+    __tablename__ = "audit_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    action = Column(String(255), nullable=False)
+    details = Column(Text)
+    ip_address = Column(String(50))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+

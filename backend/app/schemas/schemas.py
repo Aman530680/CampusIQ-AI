@@ -293,7 +293,7 @@ class InstitutionKPI(BaseModel):
 
 # ── Pagination ────────────────────────────────────────────────────────────────
 class PaginatedResponse(BaseModel):
-    items: List[Any]
+    items: List[StudentOut]
     total: int
     page: int
     size: int

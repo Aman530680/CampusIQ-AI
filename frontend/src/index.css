@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  * { @apply border-border; }
+  * { @apply border-gray-200 dark:border-gray-800; }
   body { @apply bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans antialiased; }
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { @apply bg-gray-100 dark:bg-gray-800; }

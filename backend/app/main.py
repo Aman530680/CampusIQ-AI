@@ -1,3 +1,17 @@
+import sys
+from typing import ForwardRef
+
+# Monkeypatch typing.ForwardRef._evaluate for Pydantic v1 compatibility in Python 3.12+
+try:
+    _orig_evaluate = ForwardRef._evaluate
+    def _patched_evaluate(self, globalns, localns, *args, **kwargs):
+        if 'recursive_guard' not in kwargs:
+            kwargs['recursive_guard'] = set()
+        return _orig_evaluate(self, globalns, localns, *args, **kwargs)
+    ForwardRef._evaluate = _patched_evaluate
+except Exception:
+    pass
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse

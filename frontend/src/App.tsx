@@ -10,6 +10,8 @@ import SettingsPage from './pages/admin/SettingsPage'
 import ChatbotPage from './pages/admin/ChatbotPage'
 import PredictionsPage from './pages/admin/PredictionsPage'
 import StudentDashboard from './pages/student/StudentDashboard'
+import FacultyPage from './pages/admin/FacultyPage'
+import DepartmentsPage from './pages/admin/DepartmentsPage'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } }
@@ -40,8 +42,8 @@ function AppRoutes() {
         <Route path="chatbot" element={<ChatbotPage />} />
         <Route path="reports" element={<div className="card"><p className="text-gray-500">Reports module - use the download buttons in student/department views</p></div>} />
         <Route path="settings" element={<SettingsPage />} />
-        <Route path="faculty" element={<div className="card"><p className="text-gray-500">Faculty management coming soon</p></div>} />
-        <Route path="departments" element={<div className="card"><p className="text-gray-500">Department management coming soon</p></div>} />
+        <Route path="faculty" element={<FacultyPage />} />
+        <Route path="departments" element={<DepartmentsPage />} />
       </Route>
 
       {/* Principal Routes */}
@@ -51,7 +53,7 @@ function AppRoutes() {
         <Route path="placement" element={<AdminDashboard />} />
         <Route path="predictions" element={<PredictionsPage />} />
         <Route path="chatbot" element={<ChatbotPage />} />
-        <Route path="departments" element={<div className="card"><p>Department view</p></div>} />
+        <Route path="departments" element={<DepartmentsPage />} />
         <Route path="reports" element={<div className="card"><p>Reports</p></div>} />
       </Route>
 

@@ -11,6 +11,7 @@ export const studentService = {
   list: (page = 1, size = 20, search?: string, department_id?: number) =>
     api.get<PaginatedResponse<Student>>('/students', { params: { page, size, search, department_id } }).then(r => r.data),
   get: (id: number) => api.get<Student>(`/students/${id}`).then(r => r.data),
+  getMe: () => api.get<Student>('/students/me').then(r => r.data),
   create: (data: Partial<Student>) => api.post<Student>('/students', data).then(r => r.data),
   update: (id: number, data: Partial<Student>) => api.put<Student>(`/students/${id}`, data).then(r => r.data),
   delete: (id: number) => api.delete(`/students/${id}`).then(r => r.data),
