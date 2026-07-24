@@ -56,12 +56,37 @@ def _load_departments(db: Session, df: pd.DataFrame, col_map: dict):
         "Electrical": "EEE", "Chemical": "CHEM", "Biotechnology": "BT",
         "MBA": "MBA", "MCA": "MCA",
     }
+    dept_meta = {
+        "CSE": ("Dr. Rajesh Kumar", 2001, 120),
+        "IT": ("Dr. Shalini Sen", 2003, 60),
+        "ECE": ("Dr. Amit Verma", 2001, 90),
+        "EEE": ("Dr. Vikram Seth", 2002, 60),
+        "MECH": ("Dr. Sanjay Dutt", 2004, 60),
+        "CIVIL": ("Dr. Manoj Bajpayee", 2005, 60),
+        "AIML": ("Dr. Aamir Khan", 2020, 60),
+        "AIDS": ("Dr. Shah Rukh Khan", 2021, 60),
+    }
+
     for dept_name in departments:
         dept_name = str(dept_name).strip()
-        if not db.query(Department).filter(Department.name == dept_name).first():
-            code = dept_codes.get(dept_name, dept_name[:6].upper().replace(" ", ""))
-            dept = Department(name=dept_name, code=code, total_seats=60)
+        code = dept_codes.get(dept_name, dept_name[:6].upper().replace(" ", ""))
+        meta = dept_meta.get(code, ("Dr. Neha Sharma", 2010, 60))
+        
+        dept = db.query(Department).filter(Department.code == code).first()
+        if not dept:
+            dept = Department(
+                name=dept_name, 
+                code=code, 
+                hod_name=meta[0], 
+                established_year=meta[1], 
+                total_seats=meta[2]
+            )
             db.add(dept)
+        else:
+            dept.hod_name = meta[0]
+            dept.established_year = meta[1]
+            dept.total_seats = meta[2]
+            
     db.commit()
     logger.info(f"Loaded {len(departments)} departments")
 
@@ -72,9 +97,25 @@ def _create_default_departments(db: Session):
         ("Electronics & Communication", "ECE"), ("Mechanical Engineering", "MECH"),
         ("Civil Engineering", "CIVIL"), ("Electrical Engineering", "EEE"),
     ]
+    dept_meta = {
+        "CSE": ("Dr. Rajesh Kumar", 2001, 120),
+        "IT": ("Dr. Shalini Sen", 2003, 60),
+        "ECE": ("Dr. Amit Verma", 2001, 90),
+        "EEE": ("Dr. Vikram Seth", 2002, 60),
+        "MECH": ("Dr. Sanjay Dutt", 2004, 60),
+        "CIVIL": ("Dr. Manoj Bajpayee", 2005, 60),
+    }
     for name, code in defaults:
-        if not db.query(Department).filter(Department.code == code).first():
-            db.add(Department(name=name, code=code, total_seats=60))
+        meta = dept_meta.get(code, ("Dr. Neha Sharma", 2010, 60))
+        dept = db.query(Department).filter(Department.code == code).first()
+        if not dept:
+            db.add(Department(
+                name=name, 
+                code=code, 
+                hod_name=meta[0], 
+                established_year=meta[1], 
+                total_seats=meta[2]
+            ))
     db.commit()
 
 
